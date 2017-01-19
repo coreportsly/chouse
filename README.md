@@ -6,7 +6,7 @@ Allows to perform API calls to look up company profile information among other d
 
 All API endpoints are supported and data returned is parsed JSON objects.
 
-This projects have no tests however it is being using in production at [coreportsly.com](http://coreportsly.com)
+This project has no tests however it is being using in production at [coreportsly.com](http://coreportsly.com)
 
 ### Usage
 
@@ -20,6 +20,8 @@ export CHOUSE_APIKEY='<your_secret_api_key>'
 * Example code using this package
 
 ```golang
+package main
+
 import (
    "github.com/coreportsly/chouse"
 )
