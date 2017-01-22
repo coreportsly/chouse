@@ -125,6 +125,82 @@ type Address struct {
 	Region   string `json:"region"`
 }
 
+type FilingHistoryList struct {
+	Etag         string              `json:"etag"`
+	Status       string              `json:"filing_history_status"`
+	Items        []FilingHistoryItem `json:"items"`
+	ItemsPerPage int                 `json:"items_per_page"`
+	Kind         string              `json:"kind"`
+	Start        int                 `json:"start_index"`
+	TotalCount   int                 `json:"total_count"`
+}
+
+type FilingHistoryItem struct {
+	Annotations []struct {
+		Annotation        string `json:"annotation"`
+		Category          string `json:"category"`
+		Date              string `json:"date"`
+		Description       string `json:"description"`
+		DescriptionValues struct {
+			Description string `json:"description"`
+		} `json:"description_values"`
+		Type string `json:"type"`
+	} `json:"annotations"`
+	Associated []struct {
+		ActionDate        int    `json:"action_date"`
+		Category          string `json:"category"`
+		Date              string `json:"date"`
+		Description       string `json:"description"`
+		DescriptionValues struct {
+			Capital []struct {
+				Currency string `json:"currency"`
+				Figure   string `json:"figure"`
+			} `json:"capital"`
+			Date string `json:"date"`
+		} `json:"description_values"`
+		OriginalDescription string `json:"original_description"`
+		Type                string `json:"type"`
+	} `json:"associated_filings"`
+	DescriptionValues struct {
+		MadeUpDate      string `json:"made_up_date"`
+		OfficerName     string `json:"officer_name"`
+		AppointmentDate string `json:"appointment_date"`
+		NewAddress      string `json:"new_address"`
+		ChangeDate      string `json:"change_date"`
+		OldAddress      string `json:"old_address"`
+		Date            string `json:"date"`
+		Capital         []struct {
+			Figure   string `json:"figure"`
+			Currency string `json:"currency"`
+		} `json:"capital"`
+	} `json:"description_values"`
+	Barcode     string `json:"barcode"`
+	Category    string `json:"category"`
+	Date        string `json:"date"`
+	ActionDate  string `json:"action_date"`
+	Description string `json:"description"`
+	Links       Links  `json:"links"`
+	Pages       int    `json:"pages"`
+	PaperFiled  bool   `json:"paper_filed"`
+	Resolutions []struct {
+		Category          string `json:"category"`
+		DeltaAt           string `json:"delta_at"`
+		Description       string `json:"description"`
+		DescriptionValues struct {
+			Description string `json:"description"`
+			ResType     string `json:"res_type"`
+		} `json:"description_values"`
+		DocumentID  string `json:"document_id"`
+		ReceiveDate string `json:"receive_date"`
+		// It's either Array or String...
+		// Subcategory struct `json:"subcategory"`
+		Type string `json:"type"`
+	} `json:"resolutions"`
+	Subcategory   string `json:"subcategory"`
+	TransactionID string `json:"transaction_id"`
+	Type          string `json:"type"`
+}
+
 type CoHouseAPI struct {
 	apiKey        string
 	companyNumber string
@@ -177,4 +253,20 @@ func (ch *CoHouseAPI) Company() (*Company, error) {
 	}
 
 	return c, nil
+}
+
+func (ch *CoHouseAPI) Filings() (*FilingHistoryList, error) {
+	fhl := &FilingHistoryList{}
+
+	body, err := ch.callApi("/company/" + ch.companyNumber + "/filing-history")
+	if err != nil {
+		return fhl, err
+	}
+
+	err = json.Unmarshal(body, &fhl)
+	if err != nil {
+		return fhl, err
+	}
+
+	return fhl, nil
 }
