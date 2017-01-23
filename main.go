@@ -163,6 +163,8 @@ type FilingHistoryItem struct {
 	} `json:"associated_filings"`
 	DescriptionValues struct {
 		MadeUpDate      string `json:"made_up_date"`
+		NewDate         string `json:"new_date"`
+		Description     string `json:"description"`
 		OfficerName     string `json:"officer_name"`
 		AppointmentDate string `json:"appointment_date"`
 		NewAddress      string `json:"new_address"`
