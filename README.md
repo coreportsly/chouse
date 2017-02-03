@@ -6,7 +6,7 @@ Allows to perform API calls to look up company profile information among other d
 
 All API endpoints are supported and data returned is parsed JSON objects.
 
-This project has no tests however it is being using in production at [coreportsly.com](http://coreportsly.com)
+This project has no tests however it is being used in production at [coreportsly.com](http://coreportsly.com)
 
 ### Usage
 
@@ -23,12 +23,16 @@ export CHOUSE_APIKEY='<your_secret_api_key>'
 package main
 
 import (
-   "github.com/coreportsly/chouse"
+    "github.com/coreportsly/chouse"
 )
 
 func main() {
     ch := chouse.Explore('companyNumber')
-    ch.Company() // returns Company profile
+    data, err := ch.Company()
+    // do something with error
+    for _, c := range data {
+        fmt.Println(c.CompanyName)
+    }
 }
 ```
 
