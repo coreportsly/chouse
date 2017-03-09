@@ -203,6 +203,52 @@ type FilingHistoryItem struct {
 	Type          string `json:"type"`
 }
 
+type OfficerList struct {
+	Etag                   string        `json:"etag"`
+	Kind                   string        `json:"kind"`
+	Start                  int           `json:"start_index"`
+	ItemsPerPage           int           `json:"items_per_page"`
+	TotalResults           int           `json:"total_results"`
+	ActiveAppointments     int           `json:"active_count"`
+	ResignatedAppointments int           `json:"resigned_count"`
+	Officers               []OfficerItem `json:"items"`
+	Links                  struct {
+		self string `json:"self"`
+	} `json:"Links"`
+}
+
+type OfficerItem struct {
+	Address            Address `json:"address"`
+	AppointedOn        string  `json:"appointed_on"`
+	CountryOfResidence string  `json:"country_of_residence"`
+	Dob                struct {
+		Day   int `json:"day"`
+		Month int `json:"month"`
+		Year  int `json:"year"`
+	} `json:"date_of_birth"`
+	FomerNames []struct {
+		Forenames string `json:"forenames"`
+		Surname   string `json:"surname"`
+	} `json:"former_names"`
+	Identification struct {
+		IDType             string `json:"identification_type"`
+		Authority          string `json:"legal_authority"`
+		LegalForm          string `json:"legal_form"`
+		PlaceRegistered    string `json:"place_registered"`
+		RegistrationNumber string `json:"registration_number"`
+	} `json:"identification"`
+	Links struct {
+		Officer struct {
+			Appointments string `json:"appointments"`
+		} `json:"officer"`
+	} `json:"links"`
+	Name        string `json:"name"`
+	Nationality string `json:"nationality"`
+	Occupation  string `json:"occupation"`
+	Role        string `json:"officer_role"`
+	ResignedOn  string `json:"resigned_on"`
+}
+
 type CoHouseAPI struct {
 	apiKey        string
 	companyNumber string
@@ -257,10 +303,22 @@ func (ch *CoHouseAPI) Company() (*Company, error) {
 	return c, nil
 }
 
-func (ch *CoHouseAPI) Filings() (*FilingHistoryList, error) {
+func (ch *CoHouseAPI) AccountFilings() (*FilingHistoryList, error) {
+	return ch.Filings("accounts")
+}
+
+func (ch *CoHouseAPI) AddressFilings() (*FilingHistoryList, error) {
+	return ch.Filings("address")
+}
+
+func (ch *CoHouseAPI) AnnualReturnsFilings() (*FilingHistoryList, error) {
+	return ch.Filings("annual-return")
+}
+
+func (ch *CoHouseAPI) Filings(category string) (*FilingHistoryList, error) {
 	fhl := &FilingHistoryList{}
 
-	body, err := ch.callApi("/company/" + ch.companyNumber + "/filing-history")
+	body, err := ch.callApi("/company/" + ch.companyNumber + "/filing-history?category=" + category + "&items_per_page=50")
 	if err != nil {
 		return fhl, err
 	}
@@ -271,4 +329,20 @@ func (ch *CoHouseAPI) Filings() (*FilingHistoryList, error) {
 	}
 
 	return fhl, nil
+}
+
+func (ch *CoHouseAPI) Officers() (*OfficerList, error) {
+	ofr := &OfficerList{}
+
+	body, err := ch.callApi("/company/" + ch.companyNumber + "/officers")
+	if err != nil {
+		return ofr, err
+	}
+
+	err = json.Unmarshal(body, &ofr)
+	if err != nil {
+		return ofr, err
+	}
+
+	return ofr, nil
 }
