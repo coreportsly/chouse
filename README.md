@@ -28,11 +28,17 @@ import (
 
 func main() {
     ch := chouse.Explore('companyNumber')
+
+    // get info about company
     data, err := ch.Company()
     // do something with error
     for _, c := range data {
         fmt.Println(c.CompanyName)
     }
+
+    // get company's fillings of annual return type
+    data, err := c.AnnualReturnsFilings()
+    fmt.Println(data.Items[0].Date)
 }
 ```
 
