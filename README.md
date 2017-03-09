@@ -37,7 +37,7 @@ func main() {
     }
 
     // get company's fillings of annual return type
-    data, err := c.AnnualReturnsFilings()
+    data, err := ch.AnnualReturnsFilings()
     fmt.Println(data.Items[0].Date)
 }
 ```
